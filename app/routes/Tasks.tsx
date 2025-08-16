@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Container,
@@ -20,20 +20,16 @@ import {
   DialogActions,
   Grid,
   Paper,
-} from '@mui/material';
-import {
-  Add,
-  Delete,
-  FilterList,
-} from '@mui/icons-material';
-import { useForm } from 'react-hook-form';
-import { useTaskStore } from '~/store/taskStore';
-import type { Task } from '~/types';
+} from "@mui/material";
+import { Add, Delete, FilterList } from "@mui/icons-material";
+import { useForm } from "react-hook-form";
+import { useTaskStore } from "~/store/taskStore";
+import type { Task } from "~/types";
 // Define the form data interface for type safety with React Hook Form
 interface FormData {
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
 }
 
 const Tasks: React.FC = () => {
@@ -42,7 +38,7 @@ const Tasks: React.FC = () => {
   const { tasks, addTask, toggleTask, deleteTask } = useTaskStore();
 
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [filter, setFilter] = React.useState('all');
+  const [filter, setFilter] = React.useState("all");
 
   // --- React Hook Form Setup ---
   // Initialize useForm with the default values and destructure the necessary methods
@@ -62,16 +58,23 @@ const Tasks: React.FC = () => {
 
   // --- Implement Filtering Logic ---
   const filteredTasks = tasks.filter((task: Task) => {
-    if (filter === 'completed') return task.completed;
-    if (filter === 'pending') return !task.completed;
-    if (filter === 'high') return task.priority === 'high';
+    if (filter === "completed") return task.completed;
+    if (filter === "pending") return !task.completed;
+    if (filter === "high") return task.priority === "high";
     return true; // 'all'
   });
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h4" component="h1">
           Tasks
         </Typography>
@@ -89,7 +92,7 @@ const Tasks: React.FC = () => {
 
       {/* Filter */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <FilterList />
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Filter</InputLabel>
@@ -112,7 +115,7 @@ const Tasks: React.FC = () => {
 
       {/* Tasks List */}
       {filteredTasks.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: 4, textAlign: "center" }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
             No tasks found
           </Typography>
@@ -125,7 +128,7 @@ const Tasks: React.FC = () => {
           {filteredTasks.map((task: Task) => (
             <Card key={task.id} sx={{ mb: 2 }}>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   {/* Checkbox */}
                   <Checkbox
                     checked={task.completed}
@@ -137,8 +140,12 @@ const Tasks: React.FC = () => {
                     <Typography
                       variant="h6"
                       sx={{
-                        textDecoration: task.completed ? 'line-through' : 'none',
-                        color: task.completed ? 'text.secondary' : 'text.primary'
+                        textDecoration: task.completed
+                          ? "line-through"
+                          : "none",
+                        color: task.completed
+                          ? "text.secondary"
+                          : "text.primary",
                       }}
                     >
                       {task.title}
@@ -155,8 +162,11 @@ const Tasks: React.FC = () => {
                         label={task.priority}
                         size="small"
                         color={
-                          task.priority === 'high' ? 'error' :
-                            task.priority === 'medium' ? 'warning' : 'default'
+                          task.priority === "high"
+                            ? "error"
+                            : task.priority === "medium"
+                              ? "warning"
+                              : "default"
                         }
                       />
                     </Box>
@@ -178,7 +188,14 @@ const Tasks: React.FC = () => {
 
       {/* Add Task Dialog */}
       {/* Use handleSubmit to trigger form validation and submission */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <DialogTitle>Add New Task</DialogTitle>
 
         <DialogContent>
@@ -190,7 +207,7 @@ const Tasks: React.FC = () => {
                 label="Task Title"
                 variant="outlined"
                 required
-                {...register('title', { required: 'กรุณากรอกชื่อ task' })}
+                {...register("title", { required: "กรุณากรอกชื่อ task" })}
                 error={!!errors.title}
                 helperText={errors.title?.message}
               />
@@ -203,7 +220,7 @@ const Tasks: React.FC = () => {
                 variant="outlined"
                 multiline
                 rows={3}
-                {...register('description')}
+                {...register("description")}
               />
             </Grid>
             <Grid size={12}>
@@ -213,13 +230,17 @@ const Tasks: React.FC = () => {
                 <Select
                   label="Priority"
                   defaultValue="medium"
-                  {...register('priority', { required: 'กรุณาเลือก priority' })}
+                  {...register("priority", { required: "กรุณาเลือก priority" })}
                 >
                   <MenuItem value="low">Low</MenuItem>
                   <MenuItem value="medium">Medium</MenuItem>
                   <MenuItem value="high">High</MenuItem>
                 </Select>
-                <Typography variant="caption" color="error" sx={{ ml: 2, mt: 0.5 }}>
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ ml: 2, mt: 0.5 }}
+                >
                   {errors.priority?.message}
                 </Typography>
               </FormControl>
@@ -228,9 +249,7 @@ const Tasks: React.FC = () => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>
-            Cancel
-          </Button>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
           <Button
             variant="contained"
             type="submit" // Set type to submit to trigger the form submission

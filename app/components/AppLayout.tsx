@@ -21,13 +21,17 @@ import {
   Assignment,
   Close,
 } from '@mui/icons-material';
+import { Outlet, useNavigate } from 'react-router-dom';
+import DashboardPage from '../routes/Dashboard';
+import TasksPage from '../routes/Tasks';
 
 const drawerWidth = 240;
 
-const App: React.FC = () => {
+const AppLayout: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -61,8 +65,7 @@ const App: React.FC = () => {
           <ListItem key={item.text} disablePadding>
             <ListItemButton
               onClick={() => {
-                // TODO: Students should implement React Router navigation
-                // Example: navigate(item.path);
+                navigate(item.path);
                 if (isMobile) {
                   setMobileOpen(false);
                 }
@@ -150,18 +153,11 @@ const App: React.FC = () => {
       >
         <Toolbar /> {/* Spacer for fixed AppBar */}
         
-        
-        <Box sx={{ textAlign: 'center', mt: 8 }}>
-          <Typography variant="h4" gutterBottom>
-            Welcome to Task Manager
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Implement React Router to navigate between pages
-          </Typography>
-        </Box>
+        {/* The Outlet will render the nested routes (Dashboard or Tasks) */}
+        <Outlet />
       </Box>
     </Box>
   );
 };
 
-export default App;
+export default AppLayout;

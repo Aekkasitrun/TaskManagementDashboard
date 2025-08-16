@@ -22,8 +22,6 @@ import {
   Close,
 } from '@mui/icons-material';
 import { Outlet, useNavigate } from 'react-router-dom';
-import DashboardPage from '../routes/Dashboard';
-import TasksPage from '../routes/Tasks';
 
 const drawerWidth = 240;
 
@@ -59,7 +57,7 @@ const AppLayout: React.FC = () => {
           </IconButton>
         )}
       </Toolbar>
-      
+
       <List>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding>
@@ -83,9 +81,9 @@ const AppLayout: React.FC = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <CssBaseline />
-      
+
       {/* App Bar */}
       <AppBar
         position="fixed"
@@ -103,7 +101,7 @@ const AppLayout: React.FC = () => {
           >
             <Menu />
           </IconButton>
-          
+
           <Typography variant="h6" noWrap component="div">
             Task Management Dashboard
           </Typography>
@@ -128,7 +126,7 @@ const AppLayout: React.FC = () => {
         >
           {drawer}
         </Drawer>
-        
+
         {/* Desktop drawer */}
         <Drawer
           variant="permanent"
@@ -152,8 +150,7 @@ const AppLayout: React.FC = () => {
         }}
       >
         <Toolbar /> {/* Spacer for fixed AppBar */}
-        
-        {/* The Outlet will render the nested routes (Dashboard or Tasks) */}
+
         <Outlet />
       </Box>
     </Box>

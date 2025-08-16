@@ -26,19 +26,42 @@ import {
   Delete,
   FilterList,
 } from '@mui/icons-material';
+import { useForm } from 'react-hook-form';
+import { useTaskStore } from '~/store/taskStore';
+import type { Task } from '~/types';
+// Define the form data interface for type safety with React Hook Form
+interface FormData {
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+}
 
 const Tasks: React.FC = () => {
-  // TODO: Students should manage these with Zustand and React Hook Form
+  // --- Connect to Zustand Store ---
+  // Get the tasks state and the actions from the store
+  const { tasks, addTask, toggleTask, deleteTask } = useTaskStore();
+
   const [openDialog, setOpenDialog] = React.useState(false);
   const [filter, setFilter] = React.useState('all');
 
-  // TODO: Students should replace with Zustand store data
-  const mockTasks = [
-    { id: 1, title: 'Sample Task', description: 'Task description', priority: 'medium', completed: false, createdAt: new Date() }
-  ];
+  // --- React Hook Form Setup ---
+  // Initialize useForm with the default values and destructure the necessary methods
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>();
 
-  // TODO: Students should implement filtering logic
-  const filteredTasks = mockTasks.filter((task: any) => {
+  // Function to handle form submission
+  const onSubmit = (data: FormData) => {
+    addTask(data); // Call the addTask action from the store
+    reset(); // Reset the form fields after submission
+    setOpenDialog(false); // Close the dialog
+  };
+
+  // --- Implement Filtering Logic ---
+  const filteredTasks = tasks.filter((task: Task) => {
     if (filter === 'completed') return task.completed;
     if (filter === 'pending') return !task.completed;
     if (filter === 'high') return task.priority === 'high';
@@ -55,7 +78,10 @@ const Tasks: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => setOpenDialog(true)}
+          onClick={() => {
+            reset(); // Reset form when opening the dialog
+            setOpenDialog(true);
+          }}
         >
           Add Task
         </Button>
@@ -90,23 +116,20 @@ const Tasks: React.FC = () => {
           <Typography variant="h6" color="text.secondary" gutterBottom>
             No tasks found
           </Typography>
-          <Button variant="outlined" startIcon={<Add />} onClick={() => setOpenDialog(true)}>
+          {/* <Button variant="outlined" startIcon={<Add />} onClick={() => setOpenDialog(true)}>
             Add Your First Task
-          </Button>
+          </Button> */}
         </Paper>
       ) : (
         <Box>
-          {filteredTasks.map((task: any, index: number) => (
-            <Card key={index} sx={{ mb: 2 }}>
+          {filteredTasks.map((task: Task) => (
+            <Card key={task.id} sx={{ mb: 2 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   {/* Checkbox */}
                   <Checkbox
                     checked={task.completed}
-                    onChange={() => {
-                      // TODO: Students should implement toggle completion
-                      // Example: toggleTask(task.id)
-                    }}
+                    onChange={() => toggleTask(task.id)} // Connect to toggleTask action
                   />
 
                   {/* Task Content */}
@@ -142,10 +165,7 @@ const Tasks: React.FC = () => {
                   {/* Delete Button */}
                   <IconButton
                     color="error"
-                    onClick={() => {
-                      // TODO: Students should implement delete task
-                      // Example: deleteTask(task.id)
-                    }}
+                    onClick={() => deleteTask(task.id)} // Connect to deleteTask action
                   >
                     <Delete />
                   </IconButton>
@@ -157,38 +177,51 @@ const Tasks: React.FC = () => {
       )}
 
       {/* Add Task Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+      {/* Use handleSubmit to trigger form validation and submission */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth component="form" onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>Add New Task</DialogTitle>
 
         <DialogContent>
-          {/* TODO: Students should implement React Hook Form here */}
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid size={12}>
+              {/* Connect TextField with React Hook Form using register and add validation */}
               <TextField
                 fullWidth
                 label="Task Title"
                 variant="outlined"
                 required
-              // TODO: Add form validation and state management
+                {...register('title', { required: 'กรุณากรอกชื่อ task' })}
+                error={!!errors.title}
+                helperText={errors.title?.message}
               />
             </Grid>
             <Grid size={12}>
+              {/* Connect TextField with React Hook Form for description */}
               <TextField
                 fullWidth
                 label="Description"
                 variant="outlined"
                 multiline
                 rows={3}
+                {...register('description')}
               />
             </Grid>
             <Grid size={12}>
-              <FormControl fullWidth>
+              {/* Connect Select with React Hook Form and add validation */}
+              <FormControl fullWidth error={!!errors.priority}>
                 <InputLabel>Priority</InputLabel>
-                <Select label="Priority" defaultValue="medium">
+                <Select
+                  label="Priority"
+                  defaultValue="medium"
+                  {...register('priority', { required: 'กรุณาเลือก priority' })}
+                >
                   <MenuItem value="low">Low</MenuItem>
                   <MenuItem value="medium">Medium</MenuItem>
                   <MenuItem value="high">High</MenuItem>
                 </Select>
+                <Typography variant="caption" color="error" sx={{ ml: 2, mt: 0.5 }}>
+                  {errors.priority?.message}
+                </Typography>
               </FormControl>
             </Grid>
           </Grid>
@@ -200,11 +233,7 @@ const Tasks: React.FC = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => {
-              // TODO: Students should implement form submission with validation
-              // Example: handleSubmit(formData)
-              setOpenDialog(false);
-            }}
+            type="submit" // Set type to submit to trigger the form submission
           >
             Add Task
           </Button>

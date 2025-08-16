@@ -17,21 +17,23 @@ import {
   Schedule,
   TrendingUp,
 } from "@mui/icons-material";
-
+import { useTaskStore } from "~/store/taskStore";
+import type { Task } from "~/types";
 const Dashboard: React.FC = () => {
-  // TODO: Students should get data from Zustand store
-  // Example: const { tasks } = useTaskStore();
+  // --- Connect to Zustand store ---
+  const { tasks } = useTaskStore();
 
-  const mockTasks: any[] = [
-    // Students will replace this with real data from store
-  ];
-
-  // TODO: Students should calculate these from real tasks
-  const totalTasks = mockTasks.length;
-  const completedTasks = mockTasks.filter((task: any) => task.completed).length;
+  // --- Calculate statistics from real tasks ---
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((task: Task) => task.completed).length;
   const pendingTasks = totalTasks - completedTasks;
   const completionRate =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Get the 5 most recent tasks, sorted by creation date
+  const recentTasks = tasks
+    .sort((a: Task, b: Task) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 5);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -104,7 +106,7 @@ const Dashboard: React.FC = () => {
           Recent Tasks
         </Typography>
 
-        {mockTasks.length === 0 ? (
+        {recentTasks.length === 0 ? (
           <Typography
             variant="body1"
             color="text.secondary"
@@ -114,10 +116,10 @@ const Dashboard: React.FC = () => {
           </Typography>
         ) : (
           <List>
-            {/* TODO: Students should map over recent tasks */}
-            {mockTasks.slice(0, 5).map((task: any, index: number) => (
+            {/* Map over the 5 most recent tasks */}
+            {recentTasks.map((task: Task) => (
               <ListItem
-                key={index}
+                key={task.id}
                 sx={{
                   border: "1px solid",
                   borderColor: "divider",
@@ -128,6 +130,10 @@ const Dashboard: React.FC = () => {
                 <ListItemText
                   primary={task.title}
                   secondary={task.description}
+                  sx={{
+                    textDecoration: task.completed ? "line-through" : "none",
+                    color: task.completed ? "text.secondary" : "text.primary",
+                  }}
                 />
                 <Chip
                   label={task.completed ? "Completed" : "Pending"}
